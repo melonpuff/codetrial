@@ -555,6 +555,14 @@ function bindEvents() {
     if (["Shift", "Control", "Alt", "Meta"].includes(event.key)) return;
     const indents = event.key === "Tab" && !tabLeavesEditor;
     tabLeavesEditor = false;
+    // Cmd+Enter on macOS, Ctrl+Enter elsewhere. Clicking the button keeps its
+    // disabled state as the guard; codingClosed covers an ended interview,
+    // whose button is left enabled under the ending overlay.
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey) && !event.isComposing) {
+      event.preventDefault();
+      if (!codingClosed()) nodes.run.click();
+      return;
+    }
     if (!indents) return;
     event.preventDefault();
     applyEditorEdit(indentSelection(nodes.editor.value, nodes.editor.selectionStart, nodes.editor.selectionEnd, event.shiftKey));
